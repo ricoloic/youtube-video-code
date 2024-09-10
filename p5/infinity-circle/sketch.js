@@ -48,21 +48,22 @@ function setup() {
     config.angle = random(0, TWO_PI);
     config.x = random(width / 4, width - width / 4);
     config.y = random(height / 4, height - height / 4);
-    config.radius = 20;
+    config.radius = random(0, 30);
     config.amount = 20;
-    config.spacing = 6 * random(1, 3);
+    config.spacing = 6 * random(1, 2);
     config.endRadius = config.radius;
     config.offset = 0;
 
-    for (let i = config.count - 1; i >= 0; i--) {
-        [config.endRadius, config.offset] = circles(
+    //for (let i = config.count - 1; i >= 0; i--) {
+    for (let i = 0; i < config.count; i++) {
+            [config.endRadius, config.offset] = circles(
             config.x, config.y,
             config.endRadius,
             config.amount,
             colors[i % colors.length].rgba,
             config.spacing,
             10,
-            config.offset,
+            config.offset - config.spacing,
             map(i, 0, config.count, 255, random(50, 200))
         );
     }
