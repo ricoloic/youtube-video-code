@@ -7,7 +7,7 @@ var config = {
     debug: false,
 };
 config.bins = COLOR_PALETTES[config.palette].length * 3;
-config.realEnd = config.sample - (config.sample / 2);
+config.realEnd = config.sample - (config.sample / 3);
 config.levels = (config.realEnd - config.realStart) / config.bins;
 
 const explosions = [];
@@ -81,21 +81,25 @@ function draw() {
         const previousAVG = previousSUM / previous[i].length;
 
         if (levelAVG > previousAVG + map(i, 0, config.bins, 0.15, 0.01)) {
-            const time = config.bins - (i + 1);
-            const level = ceil(map(levelAVG, 0, 1, 1, 10));
+            const reverseI = config.bins - i;
+
+            const time = reverseI - 1;
+            const level = ceil(lerp(map(levelAVG, 0, 1, 1, 10), 20, map(i, 0, config.bins, 1, 0)));
             for (let j = 0; j < level; j++) {
                 const c = COLOR_PALETTES[config.palette][i % (COLOR_PALETTES[config.palette].length)].rgba;
                 const iTimes = time * size;
-                const r = random(iTimes, iTimes + 25);
-                const p = p5.Vector.random2D().mult(r);
-                const vel = map(levelAVG, 0, 1, 1, map(i, 0, config.bins, 10, 1));
+                const r = random(iTimes, iTimes + 10);
+                const angle = random(0, TWO_PI);
+                const p = p5.Vector.fromAngle(angle).mult(r);
+                const vel = map(levelAVG, 0, 1, 1, map(i, 0, config.bins, 15, 1));
                 explosions.push(new Explosion(
                     p,
                     c,
-                    2 + i,
+                    map(reverseI, 1, config.bins, 2, 15),
                     3,
-                    max(5, (config.bins - i) / 2),
-                    vel
+                    max(5, (reverseI) / 2),
+                    vel,
+                    angle
                 ));
             }
         }
