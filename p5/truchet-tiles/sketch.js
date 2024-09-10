@@ -5,7 +5,7 @@ var config = {
     weight: 10,
     cols: undefined,
     rows: undefined,
-    tile: 'semicircle',
+    tile: 'line',
     availableWidth: undefined,
     availableHeight: undefined,
 };

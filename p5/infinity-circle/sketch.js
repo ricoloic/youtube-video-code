@@ -48,7 +48,7 @@ function setup() {
     config.angle = random(0, TWO_PI);
     config.x = random(width / 4, width - width / 4);
     config.y = random(height / 4, height - height / 4);
-    config.radius = random(0, 30);
+    config.radius = random(10, 30);
     config.amount = 20;
     config.spacing = 6 * random(1, 2);
     config.endRadius = config.radius;
