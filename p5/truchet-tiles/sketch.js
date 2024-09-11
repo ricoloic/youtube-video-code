@@ -133,8 +133,6 @@ function setup() {
     }
 }
 
-function draw() { }
-
 function keyPressed() {
     if (keyCode === 32) {
         saveCanvas("print.png");

@@ -1,7 +1,7 @@
 const colors = randomPalette();
 
 var config = {
-    count: 22,
+    count: colors.length,
     angle: undefined,
     x: undefined,
     y: undefined,
@@ -53,10 +53,10 @@ function setup() {
     config.spacing = 6 * random(1, 2);
     config.endRadius = config.radius;
     config.offset = 0;
+    const maxAlpha = random(10, 50);
 
-    //for (let i = config.count - 1; i >= 0; i--) {
     for (let i = 0; i < config.count; i++) {
-            [config.endRadius, config.offset] = circles(
+        [config.endRadius, config.offset] = circles(
             config.x, config.y,
             config.endRadius,
             config.amount,
@@ -64,7 +64,7 @@ function setup() {
             config.spacing,
             10,
             config.offset - config.spacing,
-            map(i, 0, config.count, 255, random(50, 200))
+            map(i, 0, config.count, 255, maxAlpha)
         );
     }
 
