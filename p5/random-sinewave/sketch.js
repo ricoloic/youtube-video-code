@@ -1,28 +1,11 @@
 var config = {
     backgroundColor: [240, 254, 249],
     dotsColor: [212, 228, 223],
-    strokeColor: [173, 117, 72],
+    strokeColor: [103, 99, 152],
+    sinesCount: 7,
+    radius: 200,
+    margin: 50,
 };
-
-function randomSine() {
-    const lines = [];
-    const randomX = random(0, width);
-    let start = random(0, 100);
-    let end = start + random(5, 10);
-    const amount = 6;
-    const negative = random(1) > 0.5 ? -1 : 1;
-    for (let i = 0; i < amount; i++) {
-        const offset = map(i, 0, amount, 0, amount * 0.1) * negative;
-        const l = [];
-        for (let y = 0; y < height; y++) {
-            const value = map(y, 0, height, start + offset, end + offset);
-            const x = sin(value) * 100;
-            l.push(createVector(x + randomX, y));
-        }
-        lines.push(l);
-    }
-    return lines;
-}
 
 function setup() {
     const canvas = document.querySelector('canvas');
@@ -30,69 +13,59 @@ function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
     frameRate(30);
 
-    const margin = 50;
-
     background(...config.backgroundColor);
 
-    for (let i = 0; i < 3000; i++) {
+    const pos = createVector(random(config.margin + config.radius, width - config.margin - config.radius), random(config.margin + config.radius, height - config.margin - config.radius));
+    fill(config.strokeColor);
+    noStroke();
+    circle(pos.x, pos.y, config.radius * 2);
+
+    for (let i = 0; i < 4000; i++) {
         stroke(...config.dotsColor, random(100, 255));
-        strokeWeight(random(1, 3));
-        point(random(width), random(height));
-    }
-
-    const radius = 200;
-    const pos = createVector(random(radius * 2, width - radius * 2), random(radius * 2, height - radius * 2));
-
-    fill(...config.strokeColor, 255);
-    strokeWeight(3)
-    stroke(...config.strokeColor);
-    circle(pos.x, pos.y, radius * 2);
-
-    for (let i = 0; i < 2000; i++) {
-        stroke(...config.dotsColor, random(100, 255));
-        strokeWeight(random(1, 3));
-        const v = p5.Vector.random2D().setMag(radius * sqrt(random()));
-        point(pos.x + v.x, pos.y + v.y);
-    }
-    noFill();
-    strokeWeight(3)
-    stroke(...config.strokeColor);
-    circle(pos.x, pos.y, radius * 2);
-
-    let sines = [];
-    const sineAmount = ceil(random(6, 10));
-    for (let i = 0; i < sineAmount; i++) {
-        sines.push(randomSine());
+        strokeWeight(random(2, 4));
+        point(random(config.margin, width - config.margin), random(config.margin, height - config.margin));
     }
 
     noFill();
-    for (const lines of sines) {
-        for (let i = 0; i < lines.length; i++) {
-            strokeWeight(map(i, 0, lines.length, 3, 0));
-            for (let j = 0; j < lines[i].length; j += 2) {
+    for (let i = 0; i < config.sinesCount; i++) {
+        const amplitude = random(30, 50);
+        const start = random(0, 100);
+        const end = start + random(5, 10);
+        const amount = 6;
+        const mult = random(1) > 0.5 ? -1 : 1;
+        const x = random(0, width);
+        for (let i = 0; i < amount; i++) {
+            strokeWeight(map(i, 0, amount, 4, 0));
+            const offset = map(i, 0, amount, 0, 1.3 * mult);
+            const s = start + offset;
+            const e = end + offset;
+            for (let y = config.margin; y < height - config.margin; y++) {
                 stroke(...config.strokeColor);
-                const v1 = lines[i][j];
-                const v2 = lines[i][j + 1];
-                if (p5.Vector.dist(pos, v1) < radius) {
+                const x1 = calculateX(x, y, s, e, amplitude);
+                if (dist(pos.x, pos.y, x1, y) < config.radius) {
                     stroke(...config.backgroundColor);
                 }
-                line(v1.x, v1.y, v2.x, v2.y);
+                const x2 = calculateX(x, y + 1, s, e, amplitude);
+                line(x1, y, x2, y + 1);
             }
         }
     }
 
-    fill(...config.backgroundColor);
     noStroke();
-    rect(0, 0, width, margin);
-    rect(width - margin, 0, margin, height);
-    rect(0, height - margin, width, margin);
-    rect(0, 0, margin, height);
-    strokeWeight(4);
+    fill(...config.backgroundColor);
+    rect(0, 0, config.margin, height);
+    rect(width - config.margin, 0, config.margin, height);
     stroke(...config.strokeColor);
-    line(margin, margin, width - margin, margin);
-    line(width - margin, margin, width - margin, height - margin);
-    line(width - margin, height - margin, margin, height - margin);
-    line(margin, margin, margin, height - margin);
+    strokeWeight(3);
+    line(config.margin, config.margin, width - config.margin, config.margin);
+    line(width - config.margin, config.margin, width - config.margin, height - config.margin);
+    line(width - config.margin, height - config.margin, config.margin, height - config.margin);
+    line(config.margin, height - config.margin, config.margin, config.margin);
+}
+
+function calculateX(x, y, start, end, amp) {
+    const value = map(y, config.margin, height - config.margin, start, end);
+    return sin(value) * amp + x;
 }
 
 function keyPressed() {
