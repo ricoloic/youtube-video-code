@@ -1,7 +1,7 @@
 var config = {
     backgroundColor: [240, 254, 249],
     dotsColor: [212, 228, 223],
-    strokeColor: [103, 98, 153],
+    strokeColor: [173, 117, 72],
 };
 
 function randomSine() {
@@ -24,13 +24,6 @@ function randomSine() {
     return lines;
 }
 
-function drip(pos, radius) {
-    const size = random(100, height - pos.y - radius);
-    const x = random(pos.x - radius + radius / 4, pos.x + radius - radius / 4);
-    const y = random(pos.y, height - size);
-    line(x, y, x, y + size);
-}
-
 function setup() {
     const canvas = document.querySelector('canvas');
     if (canvas) canvas.remove();
@@ -49,13 +42,6 @@ function setup() {
 
     const radius = 200;
     const pos = createVector(random(radius * 2, width - radius * 2), random(radius * 2, height - radius * 2));
-
-    //const amount = random(10, 30);
-    //for (let i = 0; i < amount; i++) {
-    //    stroke(103, 98, 153, random(100, 255));
-    //    strokeWeight(random(2, 3));
-    //    drip(pos, radius);
-    //}
 
     fill(...config.strokeColor, 255);
     strokeWeight(3)
