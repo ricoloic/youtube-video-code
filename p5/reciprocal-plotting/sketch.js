@@ -12,22 +12,32 @@ function setup() {
 
     noFill();
     stroke(255);
-    translate(width / 2, height / 2);
-    for (let i = 1; i < 100; i += 1) {
-        console.log(config.colors[i % config.colors.length]);
-        stroke(config.colors[i % config.colors.length].color);
-        strokeWeight(map(i, 1, 100, 5, 1));
+    strokeWeight(3);
+
+    translate(width / 2, width / 2);
+
+    const mult = 7;
+
+    for (let i = 1; i < 35; i++) {
+        strokeWeight(map(i, 1, 35, 5, 2));
+        stroke(config.colors[i % config.colors.length].color)
         beginShape();
         for (let x = -width / 2; x < 0; x++) {
             if (x === 0) continue;
-            const y = reciprocal(i, map(x, -width / 2, 0, -1, 0));
+
+            const mapped = map(x, -width / 2, width / 2, -1, 1);
+            const y = reciprocal(i, mapped) * mult;
+
             vertex(x, y);
         }
         endShape();
         beginShape();
         for (let x = 0.1; x < width / 2; x++) {
             if (x === 0) continue;
-            const y = reciprocal(i, map(x, 0, width / 2, 0, 1));
+
+            const mapped = map(x, 0, width / 2, 0, 1);
+            const y = reciprocal(i, mapped) * mult;
+
             vertex(x, y);
         }
         endShape();
@@ -35,7 +45,7 @@ function setup() {
 }
 
 function reciprocal(num, x) {
-    return num / x * 2;
+    return num / x;
 }
 
 function keyPressed() {
