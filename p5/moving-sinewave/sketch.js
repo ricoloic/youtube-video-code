@@ -1,7 +1,7 @@
 var config = {
     spacing: 30,
     radius: 100,
-    count: 9,
+    count: 20,
     colors: randomPalette(),
 };
 
