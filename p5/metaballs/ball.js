@@ -7,14 +7,15 @@ class Ball {
     }
 
     update() {
+        this.pos.add(this.vel);
+
         if (this.pos.x < this.radius || this.pos.x > width - this.radius) {
             this.vel.x *= -1;
         }
+
         if (this.pos.y < this.radius || this.pos.y > height - this.radius) {
             this.vel.y *= -1;
         }
-
-        this.pos.add(this.vel);
     }
 
     show() {
