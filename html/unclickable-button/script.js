@@ -2,7 +2,11 @@ const noButton = document.getElementById('no-button');
 
 console.log(noButton);
 
-noButton.addEventListener('click', function (event) {
+noButton.addEventListener('focusin', function () {
+    document.activeElement.blur()
+});
+
+noButton.addEventListener('mouseenter', function (event) {
     event.preventDefault();
 
     noButton.style.position = 'absolute';
