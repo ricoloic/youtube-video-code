@@ -44,7 +44,9 @@ function draw() {
             const x = col * scl;
             const y = row * scl;
             noStroke();
-            if (cell.visited) {
+            if (current[0] == col && current[1] == row) {
+                fill(67, 130, 200);
+            } else if (cell.visited) {
                 fill(200, 67, 130);
             } else {
                 fill(162, 200, 55);
