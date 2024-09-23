@@ -1,5 +1,5 @@
 var config = {
-    scl: 50,
+    scl: 35,
 };
 
 let cols, rows;
@@ -19,6 +19,8 @@ function setup() {
 }
 
 function draw() {
+    noStroke();
+
     let xoff = 0;
     for (let col = 0; col < cols; col++) {
         yoff = 0;
