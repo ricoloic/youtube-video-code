@@ -1,163 +1,108 @@
-var config = {
+const TYPES = {
+    1: {
+        color: '#ffafcc',
+        angle: 2 * (Math.PI / 5),
+    },
+    2: {
+        color: '#bde0fe',
+        angle: Math.PI / 5,
+    },
+    3: {
+        color: '#ffc8dd',
+        angle: 2 * (Math.PI / 5),
+    },
+    4: {
+        color: '#a2d2ff',
+        angle: Math.PI / 5,
+    }
 };
 
-const colors = [
-    '#a2d2ff',
-    '#bde0fe',
-    '#ffafcc',
-    '#ffc8dd'
-]
 
-class IsosceleTriangle {
-    constructor(a, b, commonAngle) {
-        const baseLength = p5.Vector.dist(a, b);
-        const bisectorLength = (baseLength / 2) / tan(PI - commonAngle - HALF_PI);
-        const d = createVector(lerp(a.x, b.x, 0.5), lerp(a.y, b.y, 0.5));
+function apex(a, b, type) {
+    const d = createVector(
+        lerp(a.x, b.x, 0.5),
+        lerp(a.y, b.y, 0.5),
+    );
+    const opposite = p5.Vector.dist(b, d);
+    const bisector = opposite / tan(PI - HALF_PI - TYPES[type].angle);
+    return p5.Vector
+        .sub(b, d)
+        .rotate(-HALF_PI)
+        .setMag(bisector)
+        .add(d);
+}
+
+class PenroseTriangle {
+    constructor(a, b, c, type) {
         this.a = a;
         this.b = b;
-        this.c = p5.Vector
-            .sub(d, a)
-            .setMag(bisectorLength)
-            .rotate(-HALF_PI)
-            .add(d);
-    }
-}
+        this.c = c;
+        this.type = type;
 
-class Thin1 extends IsosceleTriangle {
-    constructor(a, b, type) {
-        super(a, b, 2 * (PI / 5));
-        this.triangles = [];
-        this.substituted = false;
+        this.subdivided = false;
+        this.subdivisions = [];
     }
 
-    substitute() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.substitute();
+    subdivide() {
+        if (this.subdivided) {
+            for (const pt of this.subdivisions) {
+                pt.subdivide();
             }
             return;
         }
 
-        this.triangles[0] = new Thick2(this.c, this.a);
-        this.triangles[1] = new Thin1(this.b, this.triangles[0].c);
-        this.substituted = true;
+        if (this.type === 1) {
+            this.subdivisions[0] = new PenroseTriangle(
+                this.c, this.a, apex(this.c, this.a, 4), 4
+            );
+            this.subdivisions[1] = new PenroseTriangle(
+                this.b, this.subdivisions[0].c, this.a, 1
+            );
+        } else if (this.type === 2) {
+            this.subdivisions[0] = new PenroseTriangle(
+                this.b, this.c, apex(this.b, this.c, 2), 2
+            );
+            this.subdivisions[1] = new PenroseTriangle(
+                this.a, this.subdivisions[0].c, apex(this.a, this.subdivisions[0].c, 4), 4
+            );
+            this.subdivisions[2] = new PenroseTriangle(
+                this.c, this.subdivisions[1].c, this.subdivisions[1].b, 1
+            );
+        } else if (this.type === 3) {
+            this.subdivisions[0] = new PenroseTriangle(
+                this.b, this.c, apex(this.b, this.c, 2), 2
+            );
+            this.subdivisions[1] = new PenroseTriangle(
+                this.subdivisions[0].c, this.a, this.b, 3
+            );
+        } else if (this.type === 4) {
+            this.subdivisions[0] = new PenroseTriangle(
+                this.c, this.a, apex(this.c, this.a, 4), 4
+            );
+            this.subdivisions[1] = new PenroseTriangle(
+                this.subdivisions[0].c, this.b, apex(this.subdivisions[0].c, this.b, 2), 2
+            );
+            this.subdivisions[2] = new PenroseTriangle(
+                this.subdivisions[1].c, this.c, this.subdivisions[1].a, 3
+            );
+        }
+        this.subdivided = true;
     }
 
     show() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.show();
+        if (this.subdivided) {
+            for (const pt of this.subdivisions) {
+                pt.show();
             }
             return;
         }
 
-        fill(colors[1]);
+        fill(TYPES[this.type].color);
         triangle(this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y);
     }
 }
 
-class Thin2 extends IsosceleTriangle {
-    constructor(a, b, type) {
-        super(a, b, 2 * (PI / 5));
-        this.triangles = [];
-        this.substituted = false;
-    }
-
-    substitute() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.substitute();
-            }
-            return;
-        }
-
-        this.triangles[0] = new Thick1(this.b, this.c);
-        this.triangles[1] = new Thin2(this.triangles[0].c, this.a);
-        this.substituted = true;
-    }
-
-    show() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.show();
-            }
-            return;
-        }
-
-        fill(colors[0]);
-        triangle(this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y);
-    }
-}
-
-class Thick1 extends IsosceleTriangle {
-    constructor(a, b) {
-        super(a, b, PI / 5);
-        this.triangles = [];
-        this.substituted = false;
-    }
-
-    substitute() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.substitute();
-            }
-            return;
-        }
-
-        this.triangles[0] = new Thick1(this.b, this.c);
-        this.triangles[1] = new Thick2(this.a, this.triangles[0].c);
-        this.triangles[2] = new Thin1(this.triangles[0].b, this.triangles[1].c);
-        this.substituted = true;
-    }
-
-    show() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.show();
-            }
-            return;
-        }
-
-        fill(colors[2]);
-        triangle(this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y);
-    }
-}
-
-class Thick2 extends IsosceleTriangle {
-    constructor(a, b) {
-        super(a, b, PI / 5);
-        this.triangles = [];
-        this.substituted = false;
-    }
-
-    substitute() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.substitute();
-            }
-            return;
-        }
-
-        this.triangles[0] = new Thick2(this.c, this.a);
-        this.triangles[1] = new Thick1(this.triangles[0].c, this.b);
-        this.triangles[2] = new Thin2(this.triangles[1].c, this.triangles[0].a);
-        this.substituted = true;
-    }
-
-    show() {
-        if (this.substituted) {
-            for (const t of this.triangles) {
-                t.show();
-            }
-            return;
-        }
-
-        fill(colors[3]);
-        triangle(this.a.x, this.a.y, this.b.x, this.b.y, this.c.x, this.c.y);
-    }
-}
-
-let tiling;
+let t;
 
 function setup() {
     const canvas = document.querySelector('canvas');
@@ -165,20 +110,20 @@ function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
     frameRate(10);
     background(255);
-
     noFill();
     noStroke();
-    tiling = new Thick1(
-        createVector(100, height / 3 * 2),
-        createVector(width - 100, height / 3 * 2),
+    const a = createVector(100, height / 3 * 2);
+    const b = createVector(width - 100, height / 3 * 2);
+    t = new PenroseTriangle(
+        a, b, apex(a, b, 2), 2
     );
-    tiling.show();
+    t.show();
 }
 
 function mousePressed() {
     background(255);
-    tiling.substitute();
-    tiling.show();
+    t.subdivide();
+    t.show();
 }
 
 function keyPressed() {
